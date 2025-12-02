@@ -6,6 +6,7 @@ import {
   updateOrderStatusValidation,
 } from "../validation/order";
 import { User } from "../models/user";
+import { emitOrderUpdate } from "../utils/socket";
 
 // CREATE ORDER
 export const createOrder = async (req: Request, res: Response) => {
@@ -40,7 +41,7 @@ export const createOrder = async (req: Request, res: Response) => {
     await redis.set(redisKey, JSON.stringify(newOrder), {
       EX: 60 * 60,
     });
-    const keys = await redis.keys("orders:page:*");
+    const keys = await redis.keys(`orders:${userId}:page:*`);
     if (keys.length > 0) {
       await redis.del(keys);
       console.log("Order cache cleared");
@@ -96,8 +97,8 @@ export const updateOrder = async (req: Request, res: Response) => {
       newStatus: updated.status,
       updateAt: updated.updatedAt,
     };
-    const io = req.app.get("io");
-    io.emit("orderUpdated", updatedOrder);
+    emitOrderUpdate(updatedOrder);
+
     res.json({
       success: true,
       status: 200,
@@ -119,8 +120,19 @@ export const getAllOrders = async (req: any, res: Response) => {
     limit = Number(limit);
 
     const skip = (page - 1) * limit;
-
-    const redisKey = `orders:page:${page}:limit:${limit}`;
+    const search = (req.query.search as string) || "";
+    let redisKey = `orders:${userId}:page:${page}:limit:${limit}`;
+    let query: any = {
+      userId: userId,
+    };
+    if (search) {
+      // Example: search by userId or item name
+      query.$or = [
+        { "items.name": { $regex: search, $options: "i" } },
+        { totalAmount: { $regex: search, $options: "i" } },
+      ];
+      redisKey = `orders:${userId}:search:${search}:page:${page}:limit:${limit}`;
+    }
 
     const cachedOrders = await redis.get(redisKey);
     if (cachedOrders) {
@@ -129,7 +141,8 @@ export const getAllOrders = async (req: any, res: Response) => {
         orders: JSON.parse(cachedOrders),
       });
     }
-    const orders = await Order.find()
+
+    const orders = await Order.find(query)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -138,7 +151,9 @@ export const getAllOrders = async (req: any, res: Response) => {
       EX: 60 * 60,
     });
 
-    const totalOrders = await Order.countDocuments();
+    const totalOrders = await Order.countDocuments({
+      userId: userId,
+    });
 
     return res.json({
       success: true,

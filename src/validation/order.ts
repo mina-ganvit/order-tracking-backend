@@ -33,6 +33,6 @@ export const createOrderValidation = Joi.object({
 
 export const updateOrderStatusValidation = Joi.object({
   status: Joi.string()
-    .valid("pending", "processing", "completed", "cancelled")
+    .valid("pending", "processing", "delivered", "cancelled")
     .default("pending"),
 });

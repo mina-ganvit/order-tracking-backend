@@ -13,6 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT;
 import path from "path";
+import { setSocketServer } from "./utils/socket";
 
 mongoose
   .connect(`${process.env.DB_HOST_URL}${process.env.DB_NAME}`)
@@ -32,7 +33,8 @@ const io = new Server(server, {
   cors: { origin: "*" },
 });
 
-app.set("io", io);
+// app.set("io", io);
+setSocketServer(io);
 
 io.on("connection", (socket) => {
   console.log("Client connected", socket.id);

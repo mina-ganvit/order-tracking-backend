@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "739402e7-7117-45fd-8e6e-40a1cd90918f",
+		"name": "Order Tracking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30456950"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Mina\",\r\n    \"email\": \"minapalve@gmail.com\",\r\n    \"password\": \"Mina@12354\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MmViYzJhMDA1NDk4NzZmYjYwYTFiYSIsImVtYWlsIjoibWluYXBhbHZlQGdtYWlsLmNvbSIsImlhdCI6MTc2NDY3MTY1MiwiZXhwIjoxNzY1Mjc2NDUyfQ.XTzNWH86i0_aJ1SGbcAjXJbf-bXdRYO_wjqPmkyY6LM",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"692ebc2a00549876fb60a1ba\",\r\n    \"items\": [\r\n        {\r\n            \"name\": \"Headphone Wire\",\r\n            \"quantity\": 10\r\n        },\r\n        {\r\n            \"name\": \"Tv\",\r\n            \"quantity\": 5\r\n        }\r\n    ],\r\n    \"totalAmount\": 2360\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -9,5 +9,5 @@ const router = Router();
 
 router.post("/", authorization, createOrder);
 router.put("/:id", authorization, updateOrder);
-router.get("/", getAllOrders);
+router.get("/", authorization, getAllOrders);
 export default router;
